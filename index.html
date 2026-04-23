@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+    :root {
+      --bg: #0a0c10;
+      --bg2: #111318;
+      --bg3: #1a1d24;
+      --card: #141720;
+      --border: rgba(255, 255, 255, 0.07);
+      --border2: rgba(255, 255, 255, 0.12);
+      --accent: #00d4aa;
+      --accent2: #7c6fff;
+      --accent3: #ff6b6b;
+      --text: #e8eaf0;
+      --muted: #6b7280;
+      --muted2: #9ca3af;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+      --mono: 'DM Mono', monospace;
+      --head: 'Syne', sans-serif;
+      --body: 'DM Sans', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      min-height: 100vh;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      grid-template-rows: 56px 1fr;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      grid-column: 1/-1;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 16px;
+    }
+
+    .logo {
+      font-family: var(--head);
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--accent);
+      letter-spacing: -0.5px;
+    }
+
+    .logo span {
+      color: var(--accent2);
+    }
+
+    .topbar-sub {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: var(--mono);
+      margin-left: 8px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+      margin-left: auto;
+      box-shadow: 0 0 6px var(--success);
+    }
+
+    .status-label {
+      font-size: 12px;
+      color: var(--muted2);
+      font-family: var(--mono);
+    }
+
+    .sidebar {
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      padding: 16px 0;
+      overflow-y: auto;
+    }
+
+    .nav-section {
+      padding: 0 12px;
+      margin-bottom: 4px;
+    }
+
+    .nav-label {
+      font-size: 10px;
+      color: var(--muted);
+      font-family: var(--mono);
+      letter-spacing: 1px;
+      padding: 8px 8px 4px;
+      text-transform: uppercase;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--muted2);
+      transition: all 0.15s;
+      margin-bottom: 2px;
+    }
+
+    .nav-item:hover {
+      background: var(--bg3);
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: rgba(0, 212, 170, 0.1);
+      color: var(--accent);
+    }
+
+    .nav-icon {
+      width: 14px;
+      height: 14px;
+      opacity: 0.8;
+      flex-shrink: 0;
+    }
+
+    .main {
+      overflow-y: auto;
+      background: var(--bg);
+    }
+
+    .panel {
+      display: none;
+      padding: 24px;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .page-title {
+      font-family: var(--head);
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .page-sub {
+      font-size: 13px;
+      color: var(--muted2);
+      margin-bottom: 24px;
+      font-family: var(--mono);
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted2);
+      margin-bottom: 12px;
+      font-family: var(--mono);
+    }
+
+    .drop-zone {
+      border: 1.5px dashed var(--border2);
+      border-radius: 10px;
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--bg3);
+    }
+
+    .drop-zone:hover,
+    .drop-zone.dragover {
+      border-color: var(--accent);
+      background: rgba(0, 212, 170, 0.05);
+    }
+
+    .drop-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+
+    .drop-title {
+      font-size: 15px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .drop-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+      font-family: var(--body);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #0a0c10;
+    }
+
+    .btn-primary:hover {
+      background: #00b899;
+    }
+
+    .btn-secondary {
+      background: var(--bg3);
+      color: var(--text);
+      border: 1px solid var(--border2);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .progress-bar {
+      height: 3px;
+      background: var(--bg3);
+      border-radius: 2px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: var(--accent);
+      transition: width 0.5s ease;
+    }
+
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .agent-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .agent-icon {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .agent-name {
+      font-size: 11px;
+      font-weight: 500;
+      font-family: var(--mono);
+      color: var(--muted2);
+    }
+
+    .agent-status {
+      font-size: 10px;
+      margin-top: 6px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      display: inline-block;
+      font-family: var(--mono);
+    }
+
+    .agent-status.idle {
+      background: rgba(107, 114, 128, 0.2);
+      color: var(--muted);
+    }
+
+    .agent-status.running {
+      background: rgba(0, 212, 170, 0.15);
+      color: var(--accent);
+    }
+
+    .agent-status.done {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+
+    .agent-status.error {
+      background: rgba(255, 107, 107, 0.15);
+      color: var(--accent3);
+    }
+
+    .result-section {
+      margin-top: 20px;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .field-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+      align-items: flex-start;
+    }
+
+    .field-label {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: var(--mono);
+      min-width: 90px;
+      padding-top: 2px;
+    }
+
+    .field-value {
+      font-size: 13px;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .skill-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-family: var(--mono);
+      margin: 3px;
+    }
+
+    .skill-tech {
+      background: rgba(124, 111, 255, 0.15);
+      color: var(--accent2);
+      border: 1px solid rgba(124, 111, 255, 0.2);
+    }
+
+    .skill-soft {
+      background: rgba(0, 212, 170, 0.1);
+      color: var(--accent);
+      border: 1px solid rgba(0, 212, 170, 0.2);
+    }
+
+    .skill-cert {
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--warning);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    .match-score {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding: 14px;
+      background: var(--bg3);
+      border-radius: 8px;
+    }
+
+    .score-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--head);
+      font-weight: 700;
+      font-size: 18px;
+      border: 2px solid;
+    }
+
+    .score-circle.high {
+      border-color: var(--success);
+      color: var(--success);
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .score-circle.mid {
+      border-color: var(--warning);
+      color: var(--warning);
+      background: rgba(245, 158, 11, 0.08);
+    }
+
+    .score-circle.low {
+      border-color: var(--accent3);
+      color: var(--accent3);
+      background: rgba(255, 107, 107, 0.08);
+    }
+
+    .gap-item {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .gap-icon {
+      font-size: 14px;
+    }
+
+    .gap-name {
+      font-size: 13px;
+      color: var(--text);
+    }
+
+    .gap-path {
+      font-size: 11px;
+      color: var(--muted2);
+      font-family: var(--mono);
+    }
+
+    .log-entry {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 4px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+    }
+
+    .log-time {
+      color: var(--muted);
+      min-width: 70px;
+    }
+
+    .log-agent {
+      min-width: 80px;
+    }
+
+    .log-msg {
+      color: var(--muted2);
+      flex: 1;
+    }
+
+    .log-ok {
+      color: var(--success);
+    }
+
+    .log-warn {
+      color: var(--warning);
+    }
+
+    .log-info {
+      color: var(--info);
+    }
+
+    .api-endpoint {
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 10px 14px;
+      background: var(--bg3);
+      border-radius: 6px;
+      margin-bottom: 8px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--border);
+    }
+
+    .method {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .method.post {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+
+    .method.get {
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--info);
+    }
+
+    .api-path {
+      color: var(--accent);
+      flex: 1;
+    }
+
+    .api-desc {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .taxonomy-tree {
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .tree-item {
+      padding: 3px 0;
+      color: var(--muted2);
+    }
+
+    .tree-item .tree-root {
+      color: var(--accent2);
+      font-weight: 500;
+    }
+
+    .tree-item .tree-child {
+      color: var(--muted2);
+      padding-left: 16px;
+    }
+
+    .tree-item .tree-leaf {
+      color: var(--muted);
+      padding-left: 32px;
+      font-size: 11px;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .stat-num {
+      font-family: var(--head);
+      font-weight: 700;
+      font-size: 24px;
+      color: var(--text);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: var(--mono);
+      margin-top: 4px;
+    }
+
+    .jd-textarea {
+      width: 100%;
+      min-height: 140px;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: var(--body);
+      font-size: 13px;
+      padding: 12px;
+      resize: vertical;
+      outline: none;
+    }
+
+    .jd-textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .loading-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(0, 212, 170, 0.2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .spin {
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+    }
+
+    .thinking-bar {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      padding: 12px;
+      background: rgba(0, 212, 170, 0.05);
+      border-radius: 6px;
+      border-left: 2px solid var(--accent);
+    }
+
+    .thinking-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    .thinking-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .thinking-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 0.3
+      }
+
+      50% {
+        opacity: 1
+      }
+    }
+
+    .thinking-text {
+      font-size: 12px;
+      color: var(--accent);
+      font-family: var(--mono);
+      margin-left: 8px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+    }
+
+    .response-block {
+      background: var(--bg3);
+      border-radius: 8px;
+      padding: 16px;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text);
+      margin-top: 12px;
+      border-left: 2px solid var(--accent2);
+    }
+
+    .match-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      padding: 10px;
+      background: var(--bg3);
+      border-radius: 6px;
+    }
+
+    .match-name {
+      font-size: 13px;
+      flex: 1;
+    }
+
+    .match-bar-wrap {
+      width: 120px;
+      height: 4px;
+      background: var(--bg2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .match-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+    }
+
+    select,
+    input[type=text] {
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 8px 12px;
+      font-size: 13px;
+      font-family: var(--body);
+      outline: none;
+    }
+
+    select:focus,
+    input[type=text]:focus {
+      border-color: var(--accent);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab {
+      padding: 8px 16px;
+      font-size: 13px;
+      cursor: pointer;
+      color: var(--muted2);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.15s;
+    }
+
+    .tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab:hover:not(.active) {
+      color: var(--text);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    input[type=file] {
+      display: none;
+    }
+
+    .file-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: var(--mono);
+      color: var(--accent);
+      margin: 4px 0;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--bg3);
+      border-radius: 2px;
+    }
+  </style>
+</head>
+
+<body>
+  <h2 class="sr-only">Multi-Agent AI Resume Intelligence Platform — Upload and analyze resumes, match candidates to job
+    descriptions, browse skill taxonomy, and monitor agent pipeline.</h2>
+
+  <div class="app">
+    <div class="topbar">
+      <div class="logo">Talent<span>IQ</span></div>
+      <div class="topbar-sub">Multi-Agent Talent Intelligence · v2.0</div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+        <div class="status-dot"></div>
+        <div class="status-label">All agents online</div>
+      </div>
+    </div>
+
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Pipeline</div>
+        <div class="nav-item active" onclick="showPanel('parse')">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+            <rect x="2" y="2" width="12" height="14" rx="2" stroke="currentColor" stroke-width="1.2" />
+            <path d="M5 6h6M5 9h6M5 12h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+          </svg>
+          Resume Parser
+        </div>
+        <div class="nav-item" onclick="showPanel('match')">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2" />
+            <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+          Job Matching
+        </div>
+        <div class="nav-item" onclick="showPanel('taxonomy')">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+            <path d="M2 3h4v3H2zM10 3h4v3h-4zM6 8h4v3H6z" stroke="currentColor" stroke-width="1.2" rx="1" />
+            <path d="M4 6v2h8V6" stroke="currentColor" stroke-width="1.2" />
+            <path d="M8 6v2" stroke="currentColor" stroke-width="1.2" />
+          </svg>
+          Skill Taxonomy
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">System</div>
+        <div class="nav-item" onclick="showPanel('agents')">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.2" />
+            <path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+          </svg>
+          Agents Monitor
+        </div>
+        <div class="nav-item" onclick="showPanel('api')">
+          <svg class="nav-icon" viewBox="0 0 16 16" fill="none">
+            <path d="M10 4l4 4-4 4M6 4L2 8l4 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+          API Explorer
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <!-- RESUME PARSER PANEL -->
+      <div class="panel active" id="panel-parse">
+        <div class="page-title">Resume Intelligence Parser</div>
+        <div class="page-sub">Multi-format parsing · NLP extraction · Skill normalization</div>
+
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-num" id="stat-parsed">0</div>
+            <div class="stat-label">resumes parsed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="stat-skills">0</div>
+            <div class="stat-label">skills extracted</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="stat-accuracy">—</div>
+            <div class="stat-label">parse accuracy</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="stat-latency">—</div>
+            <div class="stat-label">avg latency</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">UPLOAD RESUME</div>
+          <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()"
+            ondragover="handleDrag(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+            <div class="drop-icon">📄</div>
+            <div class="drop-title">Drop resume file or click to browse</div>
+            <div class="drop-sub" style="margin-top:6px;">Supports PDF, DOCX, TXT · Max 10MB</div>
+          </div>
+          <input type="file" id="fileInput" accept=".pdf,.docx,.txt" onchange="handleFileSelect(event)">
+          <div id="fileChip" style="display:none;margin-top:10px;"></div>
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <button class="btn btn-primary" id="parseBtn" onclick="runParsePipeline()" disabled>
+              <span>⚡</span> Parse & Analyze
+            </button>
+            <button class="btn btn-secondary" onclick="loadDemo()">Load demo resume</button>
+            <div style="flex:1;"></div>
+            <span style="font-size:11px;color:var(--muted);font-family:var(--mono)">Powered by 3 AI agents</span>
+          </div>
+        </div>
+
+        <div id="pipelineStatus" style="display:none;" class="card">
+          <div class="card-title">AGENT PIPELINE</div>
+          <div class="agent-grid">
+            <div class="agent-card">
+              <div class="agent-icon">🔍</div>
+              <div class="agent-name">Parser</div>
+              <div class="agent-status idle" id="status-parser">idle</div>
+            </div>
+            <div class="agent-card">
+              <div class="agent-icon">🧠</div>
+              <div class="agent-name">Normalizer</div>
+              <div class="agent-status idle" id="status-normalizer">idle</div>
+            </div>
+            <div class="agent-card">
+              <div class="agent-icon">🎯</div>
+              <div class="agent-name">Matcher</div>
+              <div class="agent-status idle" id="status-matcher">idle</div>
+            </div>
+            <div class="agent-card">
+              <div class="agent-icon">🎛️</div>
+              <div class="agent-name">Orchestrator</div>
+              <div class="agent-status idle" id="status-orch">idle</div>
+            </div>
+          </div>
+          <div id="thinkingBar" style="display:none;" class="thinking-bar">
+            <div class="thinking-dot"></div>
+            <div class="thinking-dot"></div>
+            <div class="thinking-dot"></div>
+            <span class="thinking-text" id="thinkingText">Initializing pipeline...</span>
+          </div>
+          <div class="progress-bar" id="progressWrap" style="display:none;">
+            <div class="progress-fill" id="progressFill" style="width:0%"></div>
+          </div>
+        </div>
+
+        <div id="parseResults" style="display:none;" class="card">
+          <div class="card-title">EXTRACTED PROFILE</div>
+          <div class="tabs">
+            <div class="tab active" onclick="switchTab(this,'parsed-info')">Personal Info</div>
+            <div class="tab" onclick="switchTab(this,'parsed-exp')">Experience</div>
+            <div class="tab" onclick="switchTab(this,'parsed-skills')">Skills</div>
+            <div class="tab" onclick="switchTab(this,'parsed-raw')">AI Analysis</div>
+          </div>
+          <div class="tab-panel active" id="parsed-info">
+            <div id="info-content"></div>
+          </div>
+          <div class="tab-panel" id="parsed-exp">
+            <div id="exp-content"></div>
+          </div>
+          <div class="tab-panel" id="parsed-skills">
+            <div id="skills-content"></div>
+          </div>
+          <div class="tab-panel" id="parsed-raw">
+            <div id="raw-content"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- JOB MATCHING PANEL -->
+      <div class="panel" id="panel-match">
+        <div class="page-title">Semantic Job Matching</div>
+        <div class="page-sub">Vector embedding · Weighted scoring · Gap analysis</div>
+
+        <div class="card">
+          <div class="card-title">JOB DESCRIPTION</div>
+          <textarea class="jd-textarea" id="jdInput"
+            placeholder="Paste the job description here...
+
+Example: We are looking for a Senior Machine Learning Engineer with 5+ years of experience in Python, TensorFlow, PyTorch. The ideal candidate has deep knowledge of NLP, transformer architectures, MLOps (Docker, Kubernetes), and cloud platforms (AWS/GCP)..."></textarea>
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center;">
+            <button class="btn btn-primary" id="matchBtn" onclick="runMatchPipeline()"><span>🎯</span> Run Semantic
+              Match</button>
+            <button class="btn btn-secondary" onclick="loadDemoJD()">Load demo JD</button>
+            <div style="flex:1"></div>
+            <label style="font-size:12px;color:var(--muted);font-family:var(--mono);">Match threshold:</label>
+            <input type="range" min="50" max="95" value="70" id="thresholdSlider" style="width:80px;"
+              oninput="document.getElementById('thresholdVal').textContent=this.value+'%'">
+            <span style="font-size:12px;font-family:var(--mono);color:var(--accent);min-width:32px"
+              id="thresholdVal">70%</span>
+          </div>
+        </div>
+
+        <div id="matchThinking" style="display:none;" class="card">
+          <div class="thinking-bar">
+            <div class="thinking-dot"></div>
+            <div class="thinking-dot"></div>
+            <div class="thinking-dot"></div>
+            <span class="thinking-text" id="matchThinkingText">Computing semantic embeddings...</span>
+          </div>
+        </div>
+
+        <div id="matchResults" style="display:none;">
+          <div class="card">
+            <div class="card-title">MATCH RESULTS</div>
+            <div id="matchScoreSection"></div>
+          </div>
+          <div class="card" id="matchSummaryCard" style="display:none;">
+            <div class="card-title">AI SUMMARY</div>
+            <div id="matchSummary"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="card">
+              <div class="card-title">SKILL ALIGNMENT</div>
+              <div id="skillAlignment"></div>
+            </div>
+            <div class="card">
+              <div class="card-title">GAP ANALYSIS & CRITICAL GAPS</div>
+              <div id="gapAnalysis"></div>
+            </div>
+          </div>
+          <div class="card" id="bonusSkillsCard" style="display:none;">
+            <div class="card-title">BONUS — ADDITIONAL CANDIDATE SKILLS</div>
+            <div id="bonusSkills"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">AI MATCHING RATIONALE</div>
+            <div id="matchRationale"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAXONOMY PANEL -->
+      <div class="panel" id="panel-taxonomy">
+        <div class="page-title">Skill Taxonomy Browser</div>
+        <div class="page-sub">5,000+ skills · Hierarchical · Semantic normalization</div>
+
+        <div style="display:flex;gap:12px;margin-bottom:16px;">
+          <input type="text" id="taxSearch"
+            placeholder="Search skills (e.g. 'kubernetes', 'NLP', 'product management'...)" style="flex:1;"
+            oninput="filterTaxonomy()">
+          <select id="taxCategory" onchange="filterTaxonomy()" style="width:160px;">
+            <option value="">All categories</option>
+            <option value="Engineering">Engineering</option>
+            <option value="Data">Data & AI</option>
+            <option value="Cloud">Cloud & DevOps</option>
+            <option value="Product">Product & Design</option>
+            <option value="Business">Business</option>
+          </select>
+        </div>
+
+        <div id="taxonomyTree" class="card">
+          <div class="card-title">TAXONOMY TREE</div>
+          <div id="taxContent"></div>
+        </div>
+      </div>
+
+      <!-- AGENTS MONITOR PANEL -->
+      <div class="panel" id="panel-agents">
+        <div class="page-title">Agent Orchestration Monitor</div>
+        <div class="page-sub">Real-time traces · Latency metrics · Health status</div>
+
+        <div class="agent-grid" style="grid-template-columns:repeat(4,1fr)">
+          <div class="agent-card">
+            <div class="agent-icon">🔍</div>
+            <div class="agent-name">Parsing Agent</div>
+            <div class="agent-status done">healthy</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:6px;font-family:var(--mono);">avg 2.1s · F1: 0.94
+            </div>
+          </div>
+          <div class="agent-card">
+            <div class="agent-icon">🧠</div>
+            <div class="agent-name">Normalization Agent</div>
+            <div class="agent-status done">healthy</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:6px;font-family:var(--mono);">avg 0.8s · Acc: 97%
+            </div>
+          </div>
+          <div class="agent-card">
+            <div class="agent-icon">🎯</div>
+            <div class="agent-name">Matching Agent</div>
+            <div class="agent-status done">healthy</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:6px;font-family:var(--mono);">avg 1.4s · NDCG: 0.91
+            </div>
+          </div>
+          <div class="agent-card">
+            <div class="agent-icon">🎛️</div>
+            <div class="agent-name">Orchestrator</div>
+            <div class="agent-status done">healthy</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:6px;font-family:var(--mono);">uptime: 99.97%</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">EXECUTION TRACE LOG</div>
+          <div id="traceLog"></div>
+        </div>
+      </div>
+
+      <!-- API EXPLORER PANEL -->
+      <div class="panel" id="panel-api">
+        <div class="page-title">REST API Explorer</div>
+        <div class="page-sub">OpenAPI 3.0 · Production-grade · Rate limited</div>
+
+        <div class="card">
+          <div class="card-title">ENDPOINTS</div>
+          <div class="api-endpoint"><span class="method post">POST</span><span
+              class="api-path">/api/v1/parse</span><span class="api-desc">Single resume file upload + parse</span></div>
+          <div class="api-endpoint"><span class="method post">POST</span><span
+              class="api-path">/api/v1/parse/batch</span><span class="api-desc">Bulk async processing with job
+              tracking</span></div>
+          <div class="api-endpoint"><span class="method get">GET</span><span
+              class="api-path">/api/v1/candidates/{id}/skills</span><span class="api-desc">Retrieve normalized skill
+              profile</span></div>
+          <div class="api-endpoint"><span class="method post">POST</span><span
+              class="api-path">/api/v1/match</span><span class="api-desc">Semantic match candidate to JD</span></div>
+          <div class="api-endpoint"><span class="method get">GET</span><span
+              class="api-path">/api/v1/skills/taxonomy</span><span class="api-desc">Browse & search skill
+              taxonomy</span></div>
+          <div class="api-endpoint"><span class="method post">POST</span><span
+              class="api-path">/api/v1/webhooks/subscribe</span><span class="api-desc">Register async callback
+              URL</span></div>
+          <div class="api-endpoint"><span class="method get">GET</span><span
+              class="api-path">/api/v1/jobs/{jobId}/status</span><span class="api-desc">Check batch job progress</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">LIVE API TESTER</div>
+          <div style="display:flex;gap:8px;margin-bottom:12px;">
+            <select id="apiEndpoint" style="flex:1;">
+              <option value="parse_demo">POST /api/v1/parse (demo)</option>
+              <option value="skills_demo">GET /api/v1/candidates/{id}/skills</option>
+              <option value="taxonomy_demo">GET /api/v1/skills/taxonomy</option>
+              <option value="match_demo">POST /api/v1/match</option>
+            </select>
+            <button class="btn btn-primary" onclick="runAPITest()">▶ Execute</button>
+          </div>
+          <div id="apiResponse"
+            style="font-family:var(--mono);font-size:11px;background:var(--bg3);border-radius:6px;padding:14px;min-height:80px;color:var(--muted2);white-space:pre-wrap;overflow-x:auto;">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // ========================================
+    // GLOBAL STATE
+    // ========================================
+    const API_BASE = 'http://127.0.0.1:8000';
+    let parsedProfile = null;
+    let uploadedFile = null;
+    let uploadedText = null;
+
+    console.log('[TalentIQ] App initialized. Backend:', API_BASE);
+
+    // ========================================
+    // DEMO DATA (for textarea pre-fill only)
+    // ========================================
+    const DEMO_RESUME_TEXT = `Priya Sharma
+priya.sharma@email.com | +91-98765-43210 | Bangalore, India | linkedin.com/in/priyasharma
+
+EXPERIENCE
+
+Senior Machine Learning Engineer — Flipkart, Bangalore (Jan 2021 – Present)
+- Built real-time recommendation system using PyTorch and Transformer models, increasing CTR by 23%
+- Developed MLOps pipeline with Docker, Kubernetes (K8s), and MLflow on AWS SageMaker
+- Led team of 4 engineers to deploy NLP-based product classification (BERT fine-tuning, 94% accuracy)
+- Experience with Apache Kafka for streaming data pipelines
+
+ML Engineer — Wipro AI Labs (Jun 2018 – Dec 2020)
+- Developed predictive analytics models using scikit-learn, XGBoost, and TensorFlow
+- Built data processing pipelines with Apache Spark and PySpark
+- REST API development using FastAPI and Flask
+
+EDUCATION
+B.Tech Computer Science — IIT Delhi (2018) | CGPA: 8.7/10
+
+SKILLS
+Python, TensorFlow, PyTorch, Scikit-learn, NLP, BERT, Transformers, Docker, Kubernetes, AWS, MLflow, Apache Spark, PySpark, FastAPI, SQL, Git, Agile
+
+CERTIFICATIONS
+AWS Certified ML Specialty, Google Professional Data Engineer`;
+
+    const DEMO_JD = `Senior Machine Learning Engineer — FinTech Startup
+
+We are looking for a Senior Machine Learning Engineer to join our AI team.
+
+Required Skills:
+- 5+ years of Python experience
+- Deep Learning frameworks: TensorFlow or PyTorch (required)
+- Natural Language Processing (NLP) and transformer models
+- MLOps: Docker, Kubernetes, CI/CD pipelines
+- Cloud platforms: AWS or GCP (required)
+- SQL and data engineering skills
+
+Nice to Have:
+- Apache Spark / distributed computing
+- LLM fine-tuning experience
+- System design for high-traffic ML systems
+- Team leadership experience`;
+
+    const TAXONOMY_DATA = [
+      { cat: "Engineering", root: "Programming Languages", items: ["Python", "JavaScript", "TypeScript", "Java", "Go", "Rust", "C++", "Scala"] },
+      { cat: "Data", root: "Machine Learning", items: ["TensorFlow", "PyTorch", "Scikit-learn", "XGBoost", "LightGBM", "Keras", "JAX"] },
+      { cat: "Data", root: "NLP & LLMs", items: ["BERT", "GPT", "Transformers", "HuggingFace", "LangChain", "Embeddings", "RAG"] },
+      { cat: "Cloud", root: "Cloud Platforms", items: ["AWS SageMaker", "GCP Vertex AI", "Azure ML", "Lambda", "EC2", "S3"] },
+      { cat: "Cloud", root: "DevOps & MLOps", items: ["Docker", "Kubernetes (K8s)", "MLflow", "Airflow", "CI/CD", "Terraform", "Helm"] },
+      { cat: "Data", root: "Data Engineering", items: ["Apache Spark", "PySpark", "Kafka", "dbt", "Airflow", "Flink", "BigQuery"] },
+      { cat: "Engineering", root: "Web & APIs", items: ["FastAPI", "Django", "Flask", "REST", "GraphQL", "gRPC", "Redis"] },
+      { cat: "Product", root: "Product Management", items: ["Roadmapping", "OKRs", "User Research", "A/B Testing", "PRD Writing"] },
+      { cat: "Business", root: "Leadership & Strategy", items: ["Team Management", "Stakeholder Communication", "Technical Strategy"] },
+    ];
+
+    const TRACE_LOGS = [];
+
+    // ========================================
+    // UTILITY: error handler
+    // ========================================
+    async function handleFetchError(response) {
+      if (!response.ok) {
+        let errorMsg = `HTTP ${response.status}`;
+        try {
+          const errData = await response.json();
+          errorMsg += `: ${JSON.stringify(errData.detail || errData)}`;
+        } catch { /* ignore */ }
+        console.error('[TalentIQ] API Error:', errorMsg);
+        if (response.status === 404) {
+          throw new Error(`Endpoint not found (404). Is the backend running at ${API_BASE}?`);
+        } else if (response.status === 422) {
+          throw new Error(`Validation error (422): The server rejected the request. ${errorMsg}`);
+        } else {
+          throw new Error(`Backend error: ${errorMsg}`);
+        }
+      }
+      return response;
+    }
+
+    function addTraceLog(agent, msg, cls) {
+      const now = new Date();
+      const t = now.toLocaleTimeString('en-US', { hour12: false });
+      TRACE_LOGS.push({ t, agent, msg, cls });
+      console.log(`[TalentIQ][${agent}] ${msg}`);
+    }
+
+    // ========================================
+    // NAVIGATION
+    // ========================================
+    function showPanel(id) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('panel-' + id).classList.add('active');
+      event.currentTarget.classList.add('active');
+      if (id === 'agents') renderTraceLog();
+      if (id === 'taxonomy') renderTaxonomy();
+    }
+
+    // ========================================
+    // FILE HANDLING
+    // ========================================
+    function handleDrag(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('dragover'); }
+    function handleDragLeave() { document.getElementById('dropZone').classList.remove('dragover'); }
+    function handleDrop(e) { e.preventDefault(); handleDragLeave(); const f = e.dataTransfer.files[0]; if (f) processFile(f); }
+    function handleFileSelect(e) { if (e.target.files[0]) processFile(e.target.files[0]); }
+
+    function processFile(file) {
+      uploadedFile = file;
+      const chip = document.getElementById('fileChip');
+      chip.style.display = 'block';
+      chip.innerHTML = `<div class="file-chip">📄 ${file.name} <span style="color:var(--muted)">(${(file.size / 1024).toFixed(1)} KB)</span></div>`;
+      document.getElementById('parseBtn').disabled = false;
+      console.log('[TalentIQ] File selected:', file.name, file.size, 'bytes');
+    }
+
+    function loadDemo() {
+      // Create a real File object from demo text so /parse-file can accept it
+      const blob = new Blob([DEMO_RESUME_TEXT], { type: 'text/plain' });
+      uploadedFile = new File([blob], 'priya_sharma_resume.txt', { type: 'text/plain' });
+      uploadedText = DEMO_RESUME_TEXT;
+      const chip = document.getElementById('fileChip');
+      chip.style.display = 'block';
+      chip.innerHTML = `<div class="file-chip">📄 priya_sharma_resume.txt <span style="color:var(--muted)">(demo)</span></div>`;
+      document.getElementById('parseBtn').disabled = false;
+      console.log('[TalentIQ] Demo resume loaded');
+    }
+
+    function loadDemoJD() { document.getElementById('jdInput').value = DEMO_JD; }
+
+    // ========================================
+    // AGENT STATUS HELPERS
+    // ========================================
+    function setAgentStatus(id, status) {
+      const el = document.getElementById('status-' + id);
+      el.className = 'agent-status ' + status;
+      el.textContent = status;
+    }
+
+    function setThinking(text) {
+      document.getElementById('thinkingBar').style.display = 'flex';
+      document.getElementById('thinkingText').textContent = text;
+      document.getElementById('progressWrap').style.display = 'block';
+    }
+
+    function setProgress(pct) { document.getElementById('progressFill').style.width = pct + '%'; }
+
+    // ========================================
+    // 1. RESUME PARSER — calls POST /parse-file
+    // ========================================
+    async function runParsePipeline() {
+      if (!uploadedFile) {
+        alert("Please upload a file first");
+        return;
+      }
+
+      console.log('[TalentIQ] Starting parse pipeline for:', uploadedFile.name);
+      addTraceLog('ORCH', 'Pipeline initialized', 'log-ok');
+
+      document.getElementById('pipelineStatus').style.display = 'block';
+      document.getElementById('parseResults').style.display = 'none';
+      document.getElementById('parseBtn').disabled = true;
+
+      setAgentStatus('orch', 'running');
+      setThinking('Orchestrator initializing pipeline...');
+      setProgress(5);
+      await delay(400);
+
+      setAgentStatus('parser', 'running');
+      setThinking('Parsing Agent: sending file to backend...');
+      setProgress(15);
+      addTraceLog('PARSER', `Sending file: ${uploadedFile.name}`, 'log-info');
+
+      // ✅ CALL BACKEND /parse-file
+      const startTime = performance.now();
+      let apiResult;
+      try {
+        const formData = new FormData();
+        formData.append("file", uploadedFile);
+
+        console.log('[TalentIQ] POST /parse-file');
+        const response = await fetch(`${API_BASE}/parse-file`, {
+          method: "POST",
+          body: formData
+        });
+        await handleFetchError(response);
+        apiResult = await response.json();
+        console.log('[TalentIQ] /parse-file response:', apiResult);
+      } catch (err) {
+        console.error('[TalentIQ] Parse error:', err);
+        setAgentStatus('parser', 'error');
+        setAgentStatus('orch', 'error');
+        setThinking('Pipeline failed ✗');
+        addTraceLog('PARSER', `Error: ${err.message}`, 'log-warn');
+        alert(`Failed to parse resume: ${err.message}`);
+        document.getElementById('parseBtn').disabled = false;
+        return;
+      }
+
+      const latency = ((performance.now() - startTime) / 1000).toFixed(1);
+      addTraceLog('PARSER', `File parsed successfully in ${latency}s`, 'log-ok');
+
+      setAgentStatus('parser', 'done');
+      setProgress(40);
+
+      setAgentStatus('normalizer', 'running');
+      setThinking('Normalization Agent: mapping skills...');
+      setProgress(60);
+      addTraceLog('NORMALIZER', `Normalized ${(apiResult.skills?.technical || apiResult.normalized_skills || []).length} skills`, 'log-ok');
+      await delay(300);
+
+      setAgentStatus('normalizer', 'done');
+      setAgentStatus('matcher', 'running');
+      setThinking('Matcher Agent: finalizing profile...');
+      setProgress(85);
+      await delay(300);
+      setAgentStatus('matcher', 'done');
+
+      // ✅ Store in global parsedProfile from backend response
+      // Backend /parse-file already returns the full profile structure
+      parsedProfile = {
+        personal: apiResult.personal || { name: "Unknown" },
+        experience: apiResult.experience || [],
+        education: apiResult.education || [],
+        skills: apiResult.skills || { technical: [], soft: [], certifications: [] },
+        inferred_skills: apiResult.inferred_skills || [],
+        normalized_skills: apiResult.normalized_skills || [],
+        total_experience_years: apiResult.total_experience_years || 0,
+        summary: apiResult.summary || "Parsed from backend"
+      };
+
+      console.log('[TalentIQ] parsedProfile set:', parsedProfile);
+      addTraceLog('ORCH', `Pipeline complete in ${latency}s`, 'log-ok');
+
+      setAgentStatus('orch', 'done');
+      setThinking('Pipeline complete ✓');
+      setProgress(100);
+
+      renderParseResults(parsedProfile);
+
+      // Update stats
+      document.getElementById('stat-parsed').textContent =
+        parseInt(document.getElementById('stat-parsed').textContent || '0') + 1;
+      const skillCount = (parsedProfile.skills?.technical?.length || 0);
+      document.getElementById('stat-skills').textContent = skillCount;
+      document.getElementById('stat-accuracy').textContent = '—';
+      document.getElementById('stat-latency').textContent = `${latency}s`;
+
+      document.getElementById('parseBtn').disabled = false;
+    }
+
+    // ========================================
+    // 2. JOB MATCHING — calls POST /match
+    // ========================================
+    function extractKeywordsFromJD(jdText) {
+      // Extract meaningful keywords from JD text
+      const stopWords = new Set(['the','a','an','is','are','was','were','be','been','being','have','has','had',
+        'do','does','did','will','would','could','should','may','might','shall','can','need',
+        'and','or','but','if','while','of','at','by','for','with','about','against','between',
+        'through','during','before','after','above','below','to','from','up','down','in','out',
+        'on','off','over','under','then','once','here','there','when','where','why','how','all',
+        'each','every','both','few','more','most','other','some','such','no','not','only','own',
+        'same','so','than','too','very','just','because','as','until','we','our','you','your',
+        'they','their','them','this','that','these','those','it','its','i','me','my','he','him',
+        'his','she','her','who','which','what','looking','experience','years','required','ideal',
+        'candidate','join','team','work','working','strong','knowledge','deep','skills','skill',
+        'plus','must','prefer','preferred','nice','have','ability','minimum','senior','junior',
+        'role','position','job','company','startup','engineer','engineering','etc','using','used']);
+
+      const words = jdText.toLowerCase()
+        .replace(/[^a-zA-Z0-9\s\+\#\.\/\-]/g, ' ')
+        .split(/\s+/)
+        .filter(w => w.length > 1 && !stopWords.has(w));
+
+      // Also grab multi-word terms that look like tech skills
+      const techPatterns = jdText.match(/(?:NLP|MLOps|CI\/CD|A\/B|SQL|AWS|GCP|LLM|REST|GraphQL|gRPC|NoSQL|[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/g) || [];
+
+      // Deduplicate
+      const keywords = [...new Set([...words, ...techPatterns.map(t => t.toLowerCase())])];
+      console.log('[TalentIQ] Extracted JD keywords:', keywords);
+      return keywords;
+    }
+
+    async function runMatchPipeline() {
+      const jd = document.getElementById('jdInput').value.trim();
+      if (!jd) { alert('Please enter a job description'); return; }
+
+      if (!parsedProfile) {
+        alert('Please parse a resume first (go to Resume Parser tab)');
+        return;
+      }
+
+      console.log('[TalentIQ] Starting match pipeline');
+      addTraceLog('ORCH', 'Match pipeline started', 'log-ok');
+
+      document.getElementById('matchThinking').style.display = 'block';
+      document.getElementById('matchResults').style.display = 'none';
+      document.getElementById('matchBtn').disabled = true;
+
+      const steps = ["Extracting JD keywords...", "Sending to match backend...", "Computing skill alignment...", "Building gap analysis..."];
+      for (let s of steps) {
+        document.getElementById('matchThinkingText').textContent = s;
+        await delay(400);
+      }
+
+      // ✅ CALL BACKEND POST /match
+      // Prefer normalized_skills (richer from backend normalization), fall back to skills.technical
+      const skillsForMatch = parsedProfile.normalized_skills?.length
+        ? parsedProfile.normalized_skills
+        : (parsedProfile.skills?.technical || []);
+      const resumeSkills = skillsForMatch.join(", ");
+      const jobKeywords = extractKeywordsFromJD(jd);
+
+      console.log('[TalentIQ] POST /match with:', { resume_text: resumeSkills, job_skills: jobKeywords });
+      addTraceLog('MATCHER', `Resume skills: ${resumeSkills}`, 'log-info');
+      addTraceLog('MATCHER', `JD keywords: ${jobKeywords.length} extracted`, 'log-info');
+
+      let backendResult;
+      try {
+        const resp = await fetch(`${API_BASE}/match`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            resume_text: resumeSkills,
+            job_skills: jobKeywords
+          })
+        });
+        await handleFetchError(resp);
+        backendResult = await resp.json();
+        console.log('[TalentIQ] /match response:', backendResult);
+      } catch (err) {
+        console.error('[TalentIQ] Match error:', err);
+        addTraceLog('MATCHER', `Error: ${err.message}`, 'log-warn');
+        alert(`Job matching failed: ${err.message}`);
+        document.getElementById('matchThinking').style.display = 'none';
+        document.getElementById('matchBtn').disabled = false;
+        return;
+      }
+
+      // Safety check: backend now returns { parsed, normalized, match }
+      if (!backendResult.match) {
+        console.error('[TalentIQ] Invalid response format — missing "match" key:', backendResult);
+        addTraceLog('MATCHER', 'Error: invalid response format', 'log-warn');
+        alert('Match failed: unexpected response format from backend.');
+        document.getElementById('matchThinking').style.display = 'none';
+        document.getElementById('matchBtn').disabled = false;
+        return;
+      }
+
+      const matchResult = backendResult.match;
+      const score = matchResult.overall_score || 0;
+
+      addTraceLog('MATCHER', `Match score: ${score}%`, 'log-ok');
+      addTraceLog('ORCH', 'Match pipeline complete', 'log-ok');
+
+      document.getElementById('matchThinking').style.display = 'none';
+      document.getElementById('matchBtn').disabled = false;
+
+      // Pass through backend data directly — renderMatchResults handles display
+      const uiResult = {
+        overall_score: Math.round(score),
+        score_label: score >= 75 ? 'Strong Match' : score >= 50 ? 'Moderate Match' : 'Weak Match',
+        score_class: score >= 75 ? 'high' : score >= 50 ? 'mid' : 'low',
+        matched_skills: (matchResult.matched_skills || []).map(s => ({
+          skill: s.skill || s,
+          score: typeof s.score === 'number' ? s.score : 0.8,
+          tier: s.tier || 'good',
+          critical: s.critical || false,
+          match: typeof s.score === 'number' ? Math.round(s.score * 100) : 80
+        })),
+        partial_skills: (matchResult.partial_skills || []).map(s => ({
+          skill: s.skill || s,
+          score: typeof s.score === 'number' ? s.score : 0.5,
+          tier: s.tier || 'partial',
+          match: typeof s.score === 'number' ? Math.round(s.score * 100) : 50
+        })),
+        missing_skills: (matchResult.missing_skills || []).map(s =>
+          typeof s === 'object' ? s.skill : s
+        ),
+        critical_missing: matchResult.critical_missing || [],
+        bonus_skills: matchResult.bonus_skills || [],
+        summary: matchResult.summary || 'No analysis available',
+        strengths: (matchResult.matched_skills || []).length > 0
+          ? [`${(matchResult.matched_skills || []).length} matched`, `Score: ${Math.round(score)}%`]
+          : ['No matching skills found'],
+      };
+
+      console.log('[TalentIQ] UI result:', uiResult);
+      renderMatchResults(uiResult);
+    }
+
+    // ========================================
+    // RENDER FUNCTIONS (unchanged UI logic)
+    // ========================================
+    function renderParseResults(profile) {
+      document.getElementById('parseResults').style.display = 'block';
+
+      const skillCount = (profile.skills?.technical?.length || 0) + (profile.skills?.soft?.length || 0);
+      document.getElementById('stat-skills').textContent = skillCount;
+
+      const p = profile.personal || {};
+      document.getElementById('info-content').innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+      <div style="width:52px;height:52px;border-radius:50%;background:rgba(0,212,170,0.15);border:1px solid rgba(0,212,170,0.3);display:flex;align-items:center;justify-content:center;font-family:var(--head);font-size:18px;color:var(--accent);">${(p.name || '?').split(' ').map(n => n[0]).join('').slice(0, 2)}</div>
+      <div>
+        <div style="font-size:17px;font-weight:600;font-family:var(--head)">${p.name || '—'}</div>
+        <div style="font-size:12px;color:var(--muted2);font-family:var(--mono);margin-top:3px">${profile.total_experience_years || 0} years experience · ${(profile.experience || []).length} positions</div>
+      </div>
+    </div>
+    ${fieldRow('Email', p.email)}
+    ${fieldRow('Phone', p.phone)}
+    ${fieldRow('Location', p.location)}
+    ${fieldRow('LinkedIn', p.linkedin)}
+    ${(profile.education || []).map(e => {
+      if (typeof e === 'string') return fieldRow('Education', e);
+      const degree = e.degree || e.qualification || '';
+      const inst = e.institution || e.school || e.university || '';
+      const year = e.year || e.graduation_year || '';
+      const gpa = e.gpa || '';
+      const label = [degree, inst].filter(Boolean).join(' — ');
+      const extra = [year, gpa].filter(Boolean).join(' · ');
+      return fieldRow('Education', label + (extra ? ` (${extra})` : ''));
+    }).join('')}
+    <div style="margin-top:12px;padding:10px;background:var(--bg3);border-radius:6px;font-size:13px;color:var(--muted2);line-height:1.6;border-left:2px solid var(--accent2)">${profile.summary || ''}</div>
+  `;
+
+      document.getElementById('exp-content').innerHTML = (profile.experience || []).map(exp => {
+        if (typeof exp === 'string') {
+          return `<div style="margin-bottom:8px;padding:6px 0 6px 12px;border-left:1.5px solid var(--border2);font-size:13px;color:var(--muted2)">${exp}</div>`;
+        }
+        return `
+    <div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div><span style="font-weight:500;font-size:14px">${exp.role || exp.title || ''}</span> <span style="color:var(--muted2);font-size:13px">@ ${exp.company || ''}</span></div>
+        <div style="font-size:11px;font-family:var(--mono);color:var(--muted)">${exp.duration || exp.dates || ''}</div>
+      </div>
+      ${(exp.highlights || exp.description || []).map(h => `<div style="font-size:12px;color:var(--muted2);padding:2px 0 2px 12px;border-left:1.5px solid var(--border2)">• ${h}</div>`).join('')}
+    </div>
+  `;
+      }).join('');
+
+      const rawSkills = profile.skills?.technical || [];
+      const cleanSkills = rawSkills.filter(s =>
+        s.length > 2 &&
+        !["have", "team", "systems", "nice"].includes(s.toLowerCase())
+      );
+      const visibleSkills = cleanSkills.slice(0, 10);
+
+      const tech = visibleSkills;
+      const soft = profile.skills?.soft || [];
+      const certs = profile.skills?.certifications || [];
+      const inferred = profile.inferred_skills || [];
+      document.getElementById('skills-content').innerHTML = `
+    <div style="margin-bottom:12px"><div style="font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:8px">TECHNICAL (${tech.length})</div>${tech.map(s => `<span class="skill-tag skill-tech">${s}</span>`).join('')}</div>
+    <div style="margin-bottom:12px"><div style="font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:8px">SOFT SKILLS</div>${soft.map(s => `<span class="skill-tag skill-soft">${s}</span>`).join('')}</div>
+    <div style="margin-bottom:12px"><div style="font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:8px">CERTIFICATIONS</div>${certs.map(s => `<span class="skill-tag skill-cert">${s}</span>`).join('')}</div>
+    <div style="margin-bottom:12px"><div style="font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:8px">INFERRED (agent-detected)</div>${inferred.map(s => `<span class="skill-tag" style="background:rgba(59,130,246,0.1);color:var(--info);border:1px solid rgba(59,130,246,0.2)">${s}</span>`).join('')}</div>
+    <div style="margin-top:10px;padding:10px;background:var(--bg3);border-radius:6px;font-size:12px;color:var(--muted2);font-family:var(--mono)">${profile.proficiency_notes || ''}</div>
+  `;
+
+      document.getElementById('raw-content').innerHTML = `
+    <div class="response-block" style="font-size:12px;font-family:var(--mono);white-space:pre-wrap">${JSON.stringify(profile, null, 2)}</div>
+  `;
+    }
+
+    function fieldRow(label, val) {
+      return `<div class="field-row"><span class="field-label">${label}</span><span class="field-value">${val || '—'}</span></div>`;
+    }
+
+    function renderMatchResults(result) {
+      document.getElementById('matchResults').style.display = 'block';
+
+      // ── Score Section ──
+      const sc = result.overall_score;
+      document.getElementById('matchScoreSection').innerHTML = `
+    <div class="match-score">
+      <div class="score-circle ${result.score_class}">${sc}%</div>
+      <div>
+        <div style="font-size:16px;font-weight:600;font-family:var(--head)">${result.score_label}</div>
+        <div style="font-size:12px;color:var(--muted2);margin-top:4px">${(result.strengths || []).join(' · ')}</div>
+      </div>
+    </div>
+  `;
+
+      // ── AI Summary ──
+      const summaryCard = document.getElementById('matchSummaryCard');
+      if (result.summary) {
+        summaryCard.style.display = 'block';
+        document.getElementById('matchSummary').innerHTML = `
+    <div style="font-size:13px;line-height:1.7;color:var(--text);padding:10px 14px;background:var(--bg3);border-radius:8px;border-left:3px solid var(--accent)">${result.summary}</div>
+  `;
+      } else {
+        summaryCard.style.display = 'none';
+      }
+
+      // ── Tier color helper ──
+      function tierColor(tier) {
+        if (tier === 'strong') return 'var(--success)';
+        if (tier === 'good') return '#3b82f6';
+        if (tier === 'partial') return 'var(--warning)';
+        return 'var(--muted)';
+      }
+      function tierLabel(tier) {
+        if (tier === 'strong') return '● strong';
+        if (tier === 'good') return '● good';
+        if (tier === 'partial') return '○ partial';
+        return tier || '';
+      }
+
+      // ── Skill Alignment (matched + partial) ──
+      const allMatched = [...(result.matched_skills || []), ...(result.partial_skills || [])];
+
+      document.getElementById('skillAlignment').innerHTML = allMatched.length > 0
+        ? allMatched.map(s => `
+    <div class="match-row">
+      <div style="min-width:120px">
+        <div class="match-name">${s.skill}${s.critical ? ' <span style="font-size:9px;color:var(--accent3);font-weight:600">★ critical</span>' : ''}</div>
+        <div style="font-size:10px;font-family:var(--mono);color:${tierColor(s.tier)}">${tierLabel(s.tier)}</div>
+      </div>
+      <div class="match-bar-wrap"><div class="match-bar-fill" style="width:${s.match}%;background:${tierColor(s.tier)}"></div></div>
+      <div style="font-size:11px;font-family:var(--mono);color:var(--muted2);min-width:34px;text-align:right">${s.match}%</div>
+    </div>
+  `).join('')
+        : '<div style="font-size:12px;color:var(--muted2);padding:8px 0;">No matching skills found</div>';
+
+      // ── Gap Analysis (missing + critical highlighted) ──
+      const criticalSet = new Set(result.critical_missing || []);
+      const missingSkills = result.missing_skills || [];
+
+      document.getElementById('gapAnalysis').innerHTML = missingSkills.length > 0
+        ? missingSkills.map(skill => {
+            const isCritical = criticalSet.has(skill);
+            return `
+    <div class="gap-item">
+      <div class="gap-icon">${isCritical ? '🔴' : '⚠️'}</div>
+      <div>
+        <div class="gap-name">${skill} ${isCritical
+          ? '<span style="font-size:10px;padding:1px 6px;border-radius:10px;background:rgba(255,60,60,0.15);color:#ff5252;font-weight:600">critical</span>'
+          : '<span style="font-size:10px;padding:1px 6px;border-radius:10px;background:rgba(245,158,11,0.12);color:var(--warning)">missing</span>'}</div>
+        <div class="gap-path">→ Learn ${skill} — search online courses</div>
+      </div>
+    </div>
+  `;}).join('')
+        : '<div style="font-size:12px;color:var(--muted2);padding:8px 0;">No skill gaps detected ✓</div>';
+
+      // ── Bonus Skills ──
+      const bonusCard = document.getElementById('bonusSkillsCard');
+      const bonusSkills = result.bonus_skills || [];
+      if (bonusSkills.length > 0) {
+        bonusCard.style.display = 'block';
+        document.getElementById('bonusSkills').innerHTML = `
+    <div style="font-size:12px;color:var(--muted2);margin-bottom:8px;">Skills the candidate has beyond JD requirements:</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;">${bonusSkills.map(s =>
+      `<span class="skill-tag" style="background:rgba(0,212,170,0.1);color:var(--accent);border:1px solid rgba(0,212,170,0.2);font-size:12px;">✦ ${s}</span>`
+    ).join('')}</div>
+  `;
+      } else {
+        bonusCard.style.display = 'none';
+      }
+
+      // ── Rationale ──
+      const rationale = result.summary
+        || `Match score: ${sc}%. Matched ${(result.matched_skills||[]).length} skills. ${missingSkills.length > 0 ? `Missing: ${missingSkills.join(', ')}.` : 'All required skills present.'}`;
+      document.getElementById('matchRationale').innerHTML = `<div class="response-block">${rationale}</div>`;
+    }
+
+    // ========================================
+    // TAXONOMY (local data — unchanged)
+    // ========================================
+    function renderTaxonomy() {
+      const search = (document.getElementById('taxSearch')?.value || '').toLowerCase();
+      const cat = document.getElementById('taxCategory')?.value || '';
+      let filtered = TAXONOMY_DATA.filter(t =>
+        (!cat || t.cat === cat) &&
+        (!search || t.root.toLowerCase().includes(search) || t.items.some(i => i.toLowerCase().includes(search)))
+      );
+      document.getElementById('taxContent').innerHTML = filtered.map(t => `
+    <div style="margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:10px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(124,111,255,0.12);color:var(--accent2);font-family:var(--mono)">${t.cat}</span>
+        <span style="font-weight:500;font-size:13px">${t.root}</span>
+      </div>
+      <div>${t.items.filter(i => !search || i.toLowerCase().includes(search)).map(i => `<span class="skill-tag skill-tech">${i}</span>`).join('')}</div>
+    </div>
+  `).join('');
+    }
+
+    function filterTaxonomy() { renderTaxonomy(); }
+
+    // ========================================
+    // TRACE LOG (now populated live)
+    // ========================================
+    function renderTraceLog() {
+      if (TRACE_LOGS.length === 0) {
+        document.getElementById('traceLog').innerHTML = '<div style="color:var(--muted);font-size:12px;font-family:var(--mono);padding:12px;">No pipeline executions yet. Parse a resume or run a match to see traces.</div>';
+        return;
+      }
+      document.getElementById('traceLog').innerHTML = TRACE_LOGS.map(l => `
+    <div class="log-entry">
+      <span class="log-time">${l.t}</span>
+      <span class="log-agent ${l.cls}">${l.agent}</span>
+      <span class="log-msg">${l.msg}</span>
+    </div>
+  `).join('');
+    }
+
+    // ========================================
+    // 3. API EXPLORER — real fetch calls
+    // ========================================
+    async function runAPITest() {
+      const endpoint = document.getElementById('apiEndpoint').value;
+      const el = document.getElementById('apiResponse');
+      el.textContent = '⏳ Calling API...';
+
+      console.log('[TalentIQ] API Explorer: testing endpoint:', endpoint);
+
+      try {
+        let response;
+
+        if (endpoint === 'parse_demo') {
+          // POST /parse-file — needs a file, use demo text as fallback
+          const blob = new Blob([DEMO_RESUME_TEXT], { type: 'text/plain' });
+          const demoFile = new File([blob], 'demo_resume.txt', { type: 'text/plain' });
+          const formData = new FormData();
+          formData.append("file", demoFile);
+          response = await fetch(`${API_BASE}/parse-file`, { method: "POST", body: formData });
+        } else if (endpoint === 'match_demo') {
+          // POST /match
+          response = await fetch(`${API_BASE}/match`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              resume_text: "Python, TensorFlow, PyTorch, Docker, Kubernetes, AWS",
+              job_skills: ["python", "tensorflow", "pytorch", "docker", "kubernetes", "aws", "sql", "nlp"]
+            })
+          });
+        } else if (endpoint === 'skills_demo' || endpoint === 'taxonomy_demo') {
+          // GET /health as a general health check (these are display endpoints)
+          response = await fetch(`${API_BASE}/health`, { method: "GET" });
+        }
+
+        await handleFetchError(response);
+        const data = await response.json();
+        el.textContent = JSON.stringify(data, null, 2);
+        console.log('[TalentIQ] API Explorer response:', data);
+      } catch (err) {
+        console.error('[TalentIQ] API Explorer error:', err);
+        el.textContent = `❌ Error: ${err.message}\n\nMake sure the backend is running at ${API_BASE}`;
+      }
+    }
+
+    // ========================================
+    // TAB SWITCHING & UTILITY
+    // ========================================
+    function switchTab(el, panelId) {
+      const parent = el.closest('.card');
+      parent.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      parent.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById(panelId).classList.add('active');
+    }
+
+    function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    // ========================================
+    // HEALTH CHECK on load
+    // ========================================
+    (async function checkBackendHealth() {
+      try {
+        const resp = await fetch(`${API_BASE}/health`);
+        const data = await resp.json();
+        console.log('[TalentIQ] Backend health:', data);
+        if (data.status === 'running') {
+          document.querySelector('.status-label').textContent = 'Backend online';
+          document.querySelector('.status-dot').style.background = 'var(--success)';
+        }
+      } catch (err) {
+        console.warn('[TalentIQ] Backend not reachable:', err.message);
+        document.querySelector('.status-label').textContent = 'Backend offline';
+        document.querySelector('.status-dot').style.background = 'var(--accent3)';
+        document.querySelector('.status-dot').style.boxShadow = '0 0 6px var(--accent3)';
+      }
+    })();
+  </script>
+</body>
+
+</html>
